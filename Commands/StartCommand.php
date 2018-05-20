@@ -1,14 +1,15 @@
 <?php
 declare(strict_types = 1);
 
-namespace Longman\TelegramBot\Commands\SystemCommands;
+namespace Longman\TelegramBot\Commands\UserCommands;
 
 use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Request;
 
 /**
- * Class StartCommand
- * @package Longman\TelegramBot\Commands\SystemCommands
+ * Start command
+ *
+ * Gets executed when a user first starts using the bot.
  */
 class StartCommand extends SystemCommand
 {
@@ -16,22 +17,27 @@ class StartCommand extends SystemCommand
      * @var string
      */
     protected $name = 'start';
-
+    
     /**
      * @var string
      */
     protected $description = 'Start command';
-
+    
     /**
      * @var string
      */
     protected $usage = '/start';
-
+    
     /**
      * @var string
      */
     protected $version = '1.1.0';
-
+    
+    /**
+     * @var bool
+     */
+    protected $private_only = true;
+    
     /**
      * Command execute method
      *
@@ -41,16 +47,17 @@ class StartCommand extends SystemCommand
     public function execute()
     {
         $message = $this->getMessage();
-
         $chat_id = $message->getChat()->getId();
-        $text    = 'Привіт!' . PHP_EOL . 'Цей бот допоможе тобі дізнатися розклад викладачів ЖДТУ'
-            . PHP_EOL . 'використай /help для того щоб визвати допомогу';
-
+        
+        $text = 'Привіт!' . PHP_EOL .
+            'Даний бот допоможе тобі віднайти розклад викладача!' . PHP_EOL .
+            'Натисни /help для перегляду всіх команд';
+        
         $data = [
             'chat_id' => $chat_id,
-            'text'    => $text,
+            'text' => $text,
         ];
-
+        
         return Request::sendMessage($data);
     }
 }
