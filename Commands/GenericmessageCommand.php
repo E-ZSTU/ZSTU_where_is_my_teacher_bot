@@ -5,6 +5,7 @@ namespace Longman\TelegramBot\Commands\SystemCommands;
 
 use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Entities\Keyboard;
+use Longman\TelegramBot\Entities\Message;
 use Longman\TelegramBot\Request;
 
 /**
@@ -33,20 +34,6 @@ class GenericmessageCommand extends SystemCommand
     {
         $message = $this->getMessage();
         $answer = 'Вибачте, я не розумію вас. Команда /help допоможе вам';
-        $catalog = [
-            // faculties
-            'ГЕФ' => [
-                'command' => 'gef',
-            ],
-            'ФІКТ' => [
-                'command' => 'fikt',
-            ],
-            
-            // departments
-            'Кафедра іноземних мов' => [
-                'command' => 'foreignlanguages',
-            ],
-        ];
         
         $teachers = [
             'Давидович М.С.',
@@ -161,9 +148,9 @@ class GenericmessageCommand extends SystemCommand
             'Ткачук В.О.',
             'Урманов Ф.Ш.',
             'Шпиталенко Г.А.',
-
-// Факультет інформаційно-комп'ютерних технологій
-// Кафедра інженерії програмного забезпечення
+            
+            // Факультет інформаційно-комп'ютерних технологій
+            // Кафедра інженерії програмного забезпечення
             'Власенко О.В.',
             'Гойчук Д.В.',
             'Грабар О.І.',
@@ -245,8 +232,7 @@ class GenericmessageCommand extends SystemCommand
             'Чепюк Л.О.',
             
             // Факультет інженерної механіки
-
-// Кафедра автомобілів і транспортних технологій
+            // Кафедра автомобілів і транспортних технологій
             'Бегерський Д.Б.',
             'Бовсунівський І.А.',
             'Вітюк І.В.',
@@ -260,7 +246,8 @@ class GenericmessageCommand extends SystemCommand
             'Титаренко В.Є.',
             'Тростенюк Ю.І.',
             'Шумляківський В.П.',
-//Кафедра галузевого машинобудування
+            
+            //Кафедра галузевого машинобудування
             'Глембоцька Л.Є.',
             'Мельник О.Л.',
             'Мудревський П.І.',
@@ -272,8 +259,8 @@ class GenericmessageCommand extends SystemCommand
             'Степчин Я.А.',
             'Шараковський В.М.',
             'Шевченко О.В.',
-
-// Кафедра прикладної механіки і комп'ютерно-інтегрованих технологій
+            
+            // Кафедра прикладної механіки і комп'ютерно-інтегрованих технологій
             'Балицька Н.О.',
             'Виговський Г. М.',
             'Головня В.Д.',
@@ -281,12 +268,11 @@ class GenericmessageCommand extends SystemCommand
             'Мельничук П.П.',
             'Ночвай В.М.',
             'Полонський Л.Г.',
-            
             'Шостачук А.М.',
             'Штегін О.О.',
-            
             'Юмашев В.Є.',
             'Яновський В.А.',
+            
             // Кафедра фізики та вищої математики
             'Бондарчук В.М.',
             'Давидчук С.П.',
@@ -295,20 +281,17 @@ class GenericmessageCommand extends SystemCommand
             'Москвін П.П.',
             'Очич В.М.',
             'Прилипко О.І.',
-            
             'Рудніцький В.А.',
+            
             // Кафедра фізичного виховання та спорту
             'Бабій В.Д.',
             'Засік Г.Б.',
             'Кравчук О.Б.',
-            
-            
             'Крупенін О.М.',
             'Міклуш В.П.',
             'Одноворченко І.В.',
             'Остапенко О.Л.',
             'Острогляд А.Є.',
-            
             'Петренко В.І.',
             'Петренко І.І.',
             'Тамбов В.І.',
@@ -328,12 +311,14 @@ class GenericmessageCommand extends SystemCommand
             'Тростенюк Т.М.',
             'Яцик І.С.',
             'Яцик С.П.',
+            
             // Кафедра міжнародної економіки
             'Бондарчук В.В.',
             'Каленчук Л.В.',
             'Ксендзук В.В.',
             'Романчук К.В.',
             'Шиманська К.В.',
+            
             // Кафедра обліку і аудиту
             'Безручук С.Л.',
             'Вигівська І.М.',
@@ -353,6 +338,7 @@ class GenericmessageCommand extends SystemCommand
             'Хоменко Г.Ю.',
             'Чижевська Л.В.',
             'Ющак Ж.М.',
+            
             //Кафедра фінансів і кредиту
             'Александрова М.М.',
             'Виговська Н.Г.',
@@ -364,22 +350,39 @@ class GenericmessageCommand extends SystemCommand
             'Петрук О.М.',
             'Прохорчук Н.О.',
         ];
-        foreach ($catalog as $term => $reply) {
-            if (mb_stripos($term, $message->getText()) !== false) {
-                if (array_key_exists('command', $reply)) {
-                    return $this->getTelegram()->executeCommand($reply['command']);
-                }
-            } elseif (in_array($message->getText(), $teachers)) {
-                $answer = 'https://rozklad.ztu.edu.ua/schedule/teacher/' . $message->getText();
-                
-                return Request::sendMessage([
-                    'chat_id' => $message->getChat()->getId(),
-                    'text' => '<a href="' . $answer . '">' . $answer . '</a>',
-                    'parse_mode' => 'HTML',
-                ]);
-            }
+        
+        if (in_array($message->getText(), $teachers)) {
+            $answer = 'https://rozklad.ztu.edu.ua/schedule/teacher/' . $message->getText();
+            
+            return Request::sendMessage([
+                'chat_id' => $message->getChat()->getId(),
+                'text' => '<a href="' . $answer . '">' . $answer . '</a>',
+                'parse_mode' => 'HTML',
+            ]);
         }
         
+        if (($data = $this->searchTextOccurrences($teachers, $message)) !== null) {
+            
+            return Request::sendMessage($data);
+        }
+        
+        $data = [
+            'chat_id' => $message->getChat()->getId(),
+            'text' => $answer,
+            'parse_mode' => 'Markdown',
+        ];
+        
+        return Request::sendMessage($data);
+    }
+    
+    /**
+     * @param array   $teachers
+     * @param Message $message
+     *
+     * @return array|null
+     */
+    private function searchTextOccurrences(array $teachers, Message $message): ?array
+    {
         $patterns = [];
         foreach ($teachers as $teacher) {
             if (mb_stripos($teacher, $message->getText()) !== false) {
@@ -399,15 +402,9 @@ class GenericmessageCommand extends SystemCommand
                 'reply_markup' => $keyboard,
             ];
             
-            return Request::sendMessage($data);
+            return $data;
         }
         
-        $data = [
-            'chat_id' => $message->getChat()->getId(),
-            'text' => $answer,
-            'parse_mode' => 'Markdown',
-        ];
-        
-        return Request::sendMessage($data);
+        return null;
     }
 }
