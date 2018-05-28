@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Longman\TelegramBot\Commands\SystemCommands;
 
 use Longman\TelegramBot\Commands\SystemCommand;
-use Longman\TelegramBot\Commands\Model\TeacherParser;
+use WhereIsMyTeacherBot\Model\TeacherParser;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\Message;
 use Longman\TelegramBot\Request;
@@ -386,7 +386,7 @@ class GenericmessageCommand extends SystemCommand
      * @return array|null
      * @throws \Longman\TelegramBot\Exception\TelegramException
      */
-    private function searchTextOccurrences(array $teachers, Message $message): ?array
+    private function searchTextOccurrences(array $teachers, Message $message): array
     {
         $patterns = [];
         foreach ($teachers as $teacher) {
