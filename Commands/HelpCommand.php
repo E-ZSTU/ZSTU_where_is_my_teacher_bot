@@ -43,7 +43,9 @@ class HelpCommand extends SystemCommand
         $chat_id = $message->getChat()->getId();
         
         $text = 'Надрукуйте фамілію викладача, або частину фамілії і я допоможу вам віднайти його'
-            . PHP_EOL . 'Наприклад: Морозов';
+            . PHP_EOL . 'Наприклад: Морозов'
+            . PHP_EOL . 'Я трішки став старим. І мені варто вже піти відпочивайте.'
+            . PHP_EOL . 'В нагоді вам стане мій брат @ZSTU_where_is_my_teacher_bot';
         
         $data = [
             'chat_id' => $chat_id,
