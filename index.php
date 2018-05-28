@@ -1,10 +1,12 @@
 <?php
 
 require_once __DIR__ . '/vendor/autoload.php';
+require 'bootstrap.php';
 
 use Longman\TelegramBot\Telegram;
 
 try {
+    Longman\TelegramBot\TelegramLog::initErrorLog('var/log/bot.log');
     // Create Telegram API object
     $telegram = new Telegram(
         'api_key',
@@ -14,6 +16,6 @@ try {
 
     // Handle telegram webhook request
     $telegram->handle();
-} catch (Exception $e) {
-    echo "<pre>$e</pre>";
+} catch (\Longman\TelegramBot\Exception\TelegramException $e) {
+    \Longman\TelegramBot\TelegramLog::error($e);
 }
