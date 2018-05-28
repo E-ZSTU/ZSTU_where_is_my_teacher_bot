@@ -355,8 +355,8 @@ class GenericmessageCommand extends SystemCommand
         if (in_array($message->getText(), $teachers)) {
             $teacherUrl = 'https://rozklad.ztu.edu.ua/schedule/teacher/' . $message->getText();
 
-            $answer = TeacherParser::parse($teacherUrl) .
-                "<br/><a href=\"$teacherUrl\">'Розклад викладача</a>";
+            $answer = TeacherParser::parse($teacherUrl, $message->getText()) .
+                "\n\n<a href='$teacherUrl'>Повний розклад викладача</a>";
 
             return Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
