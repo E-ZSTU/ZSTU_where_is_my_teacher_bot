@@ -42,7 +42,7 @@ class HelpCommand extends SystemCommand
         $message = $this->getMessage();
         $chat_id = $message->getChat()->getId();
         
-        $text = 'Надрукуйте фамілію викладача, або частину фамілії і я допоможу вам віднайти його'
+        $text = 'Надрукуйте прізвище викладача, або частину прізвища і я допоможу вам віднайти його'
             . PHP_EOL . 'Наприклад: Морозов';
         
         $data = [
