@@ -14,7 +14,11 @@ class TeacherParser
          $currentTable = pq('th.selected')->parents('table');
          $currentWeek = $currentTable->prev()->text();
 
-         $lessons = pq('th.selected')->parents('table')->find('td:contains("Морозов А.В.")');
+         $lessons = pq('th.selected')->parents('table')->find("td:contains(\"$teacher\")");
+
+         if(!$lessons){
+             return "$currentWeek для даного викладача - тиждень без пар";
+         }
 
          $lessonsList = "<b>Показано $currentWeek</b>\n";
 
