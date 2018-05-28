@@ -26,7 +26,7 @@ class TeacherParser
             $lessonsList .= "\n<b>$day:</b>\n";
             /** @var phpQueryObject $pqLesson */
             foreach ($dayLessons as $time => $pqLesson) {
-                $lessonsList .= "\n<b>$time:</b> " . trim(str_replace($teacher, '', $pqLesson->text()));
+                $lessonsList .= "\n<b>$time:</b> " . trim(str_replace($teacher, '', $pqLesson->text())) . "\n";
             }
         }
 
