@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Longman\TelegramBot\Commands\Model;
+namespace WhereIsMyTeacherBot\Model;
 
 class TeacherParser
 {
