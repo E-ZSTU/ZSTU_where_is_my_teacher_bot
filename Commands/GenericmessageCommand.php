@@ -4,10 +4,10 @@ declare(strict_types = 1);
 namespace Longman\TelegramBot\Commands\SystemCommands;
 
 use Longman\TelegramBot\Commands\SystemCommand;
-use WhereIsMyTeacherBot\Model\TeacherParser;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\Message;
 use Longman\TelegramBot\Request;
+use WhereIsMyTeacherBot\Model\TeacherParser;
 
 /**
  * Class GenericmessageCommand
@@ -354,9 +354,9 @@ class GenericmessageCommand extends SystemCommand
         
         if (in_array($message->getText(), $teachers)) {
             $teacherUrl = 'https://rozklad.ztu.edu.ua/schedule/teacher/' . $message->getText();
-
-            $answer = TeacherParser::parse($teacherUrl, $message->getText()) .
-                "\n\n<a href='$teacherUrl'>Повний розклад викладача</a>";
+    
+            $answer = TeacherParser::parse($teacherUrl, $message->getText())
+                . PHP_EOL . "<a href='$teacherUrl'>Повний розклад викладача</a>";
 
             return Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
