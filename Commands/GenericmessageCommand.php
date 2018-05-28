@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Longman\TelegramBot\Commands\SystemCommands;
 
 use Longman\TelegramBot\Commands\SystemCommand;
+use WhereIsMyTeacherBot\Model\TeacherParser;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\Message;
 use Longman\TelegramBot\Request;
@@ -352,11 +353,14 @@ class GenericmessageCommand extends SystemCommand
         ];
         
         if (in_array($message->getText(), $teachers)) {
-            $answer = 'https://rozklad.ztu.edu.ua/schedule/teacher/' . $message->getText();
-            
+            $teacherUrl = 'https://rozklad.ztu.edu.ua/schedule/teacher/' . $message->getText();
+
+            $answer = TeacherParser::parse($teacherUrl, $message->getText()) .
+                "\n\n<a href='$teacherUrl'>Повний розклад викладача</a>";
+
             return Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
-                'text' => '<a href="' . $answer . '">' . $answer . '</a>',
+                'text' => $answer,
                 'parse_mode' => 'HTML',
             ]);
         }
@@ -374,14 +378,15 @@ class GenericmessageCommand extends SystemCommand
         
         return Request::sendMessage($data);
     }
-    
+
     /**
      * @param array   $teachers
      * @param Message $message
      *
      * @return array|null
+     * @throws \Longman\TelegramBot\Exception\TelegramException
      */
-    private function searchTextOccurrences(array $teachers, Message $message): ?array
+    private function searchTextOccurrences(array $teachers, Message $message): array
     {
         $patterns = [];
         foreach ($teachers as $teacher) {

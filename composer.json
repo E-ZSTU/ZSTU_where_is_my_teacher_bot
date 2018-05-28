@@ -4,12 +4,13 @@
   "type": "project",
   "autoload": {
     "psr-4": {
-      "Rozklad\\": "src/"
+      "WhereIsMyTeacherBot\\": "WhereIsMyTeacherBot/"
     }
   },
   "require": {
     "php": "^7.0",
-    "longman/telegram-bot": "^0.44.1"
+    "longman/telegram-bot": "^0.44.1",
+    "electrolinux/phpquery": "^0.9.6"
   },
   "require-dev": {
   }
