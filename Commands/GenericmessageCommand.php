@@ -378,15 +378,14 @@ class GenericmessageCommand extends SystemCommand
         
         return Request::sendMessage($data);
     }
-
+    
     /**
      * @param array   $teachers
      * @param Message $message
      *
      * @return array|null
-     * @throws \Longman\TelegramBot\Exception\TelegramException
      */
-    private function searchTextOccurrences(array $teachers, Message $message): array
+    private function searchTextOccurrences(array $teachers, Message $message): ?array
     {
         $patterns = [];
         foreach ($teachers as $teacher) {
