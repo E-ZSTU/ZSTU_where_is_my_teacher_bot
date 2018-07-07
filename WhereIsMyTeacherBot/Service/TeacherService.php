@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace WhereIsMyTeacherBot\Service;
 
+use Carbon\Carbon;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use WhereIsMyTeacherBot\Model\TeacherParser;
 
@@ -30,7 +31,8 @@ class TeacherService
      */
     public function getSchedule(string $teacherName)
     {
-        $cacheKey = md5($teacherName);
+        $week = Carbon::now()->weekOfYear % 2;
+        $cacheKey = md5($teacherName . $week);
 
         if ($this->cache->has($cacheKey)) {
             return $this->cache->get($cacheKey);
