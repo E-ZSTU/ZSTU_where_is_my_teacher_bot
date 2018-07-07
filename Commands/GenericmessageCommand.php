@@ -7,6 +7,7 @@ use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\Message;
 use Longman\TelegramBot\Request;
+use Symfony\Component\Cache\Simple\FilesystemCache;
 use WhereIsMyTeacherBot\Model\TeacherParser;
 
 /**
@@ -19,12 +20,12 @@ class GenericmessageCommand extends SystemCommand
      * @var string
      */
     protected $name = 'Generic';
-    
+
     /**
      * @var string
      */
     protected $version = '0.0.1';
-    
+
     /**
      * Command execute method
      *
@@ -35,7 +36,7 @@ class GenericmessageCommand extends SystemCommand
     {
         $message = $this->getMessage();
         $answer = 'Вибачте, я не розумію вас. Команда /help допоможе вам';
-        
+
         $teachers = [
             'Давидович М.С.',
             'Канчура Є.О.',
@@ -51,7 +52,7 @@ class GenericmessageCommand extends SystemCommand
             'Суховецька С.В.',
             'Фурсова Л.І.',
             'Шадура В.А.',
-            
+
             // кафедра екології
             'Вінічук М.М.',
             'Герасимчук О.Л.',
@@ -64,7 +65,7 @@ class GenericmessageCommand extends SystemCommand
             'Мандро Ю.Н.',
             'Скиба Г.В.',
             'Шелест З.М.',
-            
+
             // Кафедра маркшейдерії
             'Башинська М.Е.',
             'Іськов С.С.',
@@ -76,7 +77,7 @@ class GenericmessageCommand extends SystemCommand
             'Мамрай В.В.',
             'Панасюк А.В.',
             'Соболевський Р.В.',
-            
+
             // Кафедра розробки родовищ корисних копалин ім. проф. Бакка М.Т.
             'Башинський С.І.',
             'Камських О.В.',
@@ -88,7 +89,7 @@ class GenericmessageCommand extends SystemCommand
             'Хоменчук О.В.',
             'Шамрай В.І.',
             'Шлапак В.О.',
-            
+
             // Факультет економіки та менеджменту
             // Кафедра гуманітарних і соціальних наук
             'Білоус Б.П.',
@@ -100,7 +101,7 @@ class GenericmessageCommand extends SystemCommand
             'Панасюк Н. В.',
             'Саннікова С.Б.',
             'Шуляренко Л. І.',
-            
+
             // Кафедра економіки та підприємництва
             'Біляк Т.О.',
             'Бірюченко С.Ю.',
@@ -121,7 +122,7 @@ class GenericmessageCommand extends SystemCommand
             'Ущаповський Ю.В.',
             'Юрківський О.Й.',
             'Юшкевич О.О.',
-            
+
             // Кафедра менеджменту організацій і адміністрування
             'Балковська В.В.',
             'Бурачек І.В.',
@@ -138,7 +139,7 @@ class GenericmessageCommand extends SystemCommand
             'Тарасюк Г.М.',
             'Царук І.М.',
             'Ярмолюк Д.І.',
-            
+
             // Кафедра управління персоналом та економіки праці
             'Богоявленська Ю.В.',
             'Желудько Т.В.',
@@ -149,7 +150,7 @@ class GenericmessageCommand extends SystemCommand
             'Ткачук В.О.',
             'Урманов Ф.Ш.',
             'Шпиталенко Г.А.',
-            
+
             // Факультет інформаційно-комп'ютерних технологій
             // Кафедра інженерії програмного забезпечення
             'Власенко О.В.',
@@ -171,7 +172,7 @@ class GenericmessageCommand extends SystemCommand
             'Сугоняк І.І.',
             'Шатківський В.М.',
             'Яремчук С.І.',
-            
+
             // Кафедра автоматизації та комп'ютерно-інтегрованих технологій ім. проф. Б.Б. Самотокіна
             'Безвесільна О.М.',
             'Богдановський М.В.',
@@ -186,7 +187,7 @@ class GenericmessageCommand extends SystemCommand
             'Хильченко Т.В.',
             'Черепанська І.Ю.',
             'Шавурський Ю.О.',
-            
+
             // Кафедра біомедичної інженерії та телекомунікацій
             'Андреєв О.В.',
             'Бенедицький В.Б.',
@@ -204,7 +205,7 @@ class GenericmessageCommand extends SystemCommand
             'Ципоренко В.В.',
             'Ципоренко В.Г.',
             'Чухов В.В.',
-            
+
             // Кафедра комп'ютерної інженерії та кібербезпеки
             'Байлюк Є.М.',
             'Єфіменко А.А.',
@@ -220,7 +221,7 @@ class GenericmessageCommand extends SystemCommand
             'Поліщук В.В.',
             'Россінський Ю.М.',
             'Шестаков В.І.',
-            
+
             // Кафедра метрології та інформаційно-вимірювальної техніки
             'Болотній О.Г.',
             'Воронова Т.С.',
@@ -231,7 +232,7 @@ class GenericmessageCommand extends SystemCommand
             'Поліщук О.А.',
             'Тарарака В.Д.',
             'Чепюк Л.О.',
-            
+
             // Факультет інженерної механіки
             // Кафедра автомобілів і транспортних технологій
             'Бегерський Д.Б.',
@@ -247,7 +248,7 @@ class GenericmessageCommand extends SystemCommand
             'Титаренко В.Є.',
             'Тростенюк Ю.І.',
             'Шумляківський В.П.',
-            
+
             //Кафедра галузевого машинобудування
             'Глембоцька Л.Є.',
             'Мельник О.Л.',
@@ -260,7 +261,7 @@ class GenericmessageCommand extends SystemCommand
             'Степчин Я.А.',
             'Шараковський В.М.',
             'Шевченко О.В.',
-            
+
             // Кафедра прикладної механіки і комп'ютерно-інтегрованих технологій
             'Балицька Н.О.',
             'Виговський Г. М.',
@@ -273,7 +274,7 @@ class GenericmessageCommand extends SystemCommand
             'Штегін О.О.',
             'Юмашев В.Є.',
             'Яновський В.А.',
-            
+
             // Кафедра фізики та вищої математики
             'Бондарчук В.М.',
             'Давидчук С.П.',
@@ -283,7 +284,7 @@ class GenericmessageCommand extends SystemCommand
             'Очич В.М.',
             'Прилипко О.І.',
             'Рудніцький В.А.',
-            
+
             // Кафедра фізичного виховання та спорту
             'Бабій В.Д.',
             'Засік Г.Б.',
@@ -298,7 +299,7 @@ class GenericmessageCommand extends SystemCommand
             'Тамбов В.І.',
             'Цуд І.В.',
             'Шелесько С.П.',
-            
+
             // Факультет обліку і фінансів
             // Кафедра економічної безпеки, публічного управління та адміністрування
             'Барановська Т.В.',
@@ -312,14 +313,14 @@ class GenericmessageCommand extends SystemCommand
             'Тростенюк Т.М.',
             'Яцик І.С.',
             'Яцик С.П.',
-            
+
             // Кафедра міжнародної економіки
             'Бондарчук В.В.',
             'Каленчук Л.В.',
             'Ксендзук В.В.',
             'Романчук К.В.',
             'Шиманська К.В.',
-            
+
             // Кафедра обліку і аудиту
             'Безручук С.Л.',
             'Вигівська І.М.',
@@ -339,7 +340,7 @@ class GenericmessageCommand extends SystemCommand
             'Хоменко Г.Ю.',
             'Чижевська Л.В.',
             'Ющак Ж.М.',
-            
+
             //Кафедра фінансів і кредиту
             'Александрова М.М.',
             'Виговська Н.Г.',
@@ -351,12 +352,20 @@ class GenericmessageCommand extends SystemCommand
             'Петрук О.М.',
             'Прохорчук Н.О.',
         ];
-        
-        if (in_array($message->getText(), $teachers)) {
+
+        if (\in_array($message->getText(), $teachers,true)) {
             $teacherUrl = 'https://rozklad.ztu.edu.ua/schedule/teacher/' . $message->getText();
-    
-            $answer = TeacherParser::parse($teacherUrl, $message->getText())
-                . PHP_EOL . "<a href='$teacherUrl'>Повний розклад викладача</a>";
+
+            $cache = new FilesystemCache();
+            $cacheKey = md5($teacherUrl);
+            if ($cache->has($cacheKey)) {
+                $answer = $cache->get($cacheKey);
+            } else {
+                $answer = TeacherParser::parse($teacherUrl, $message->getText())
+                    . PHP_EOL . "<a href='$teacherUrl'>Повний розклад викладача</a>";
+
+                $cache->set($cacheKey, $answer);
+            }
 
             return Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
@@ -364,21 +373,21 @@ class GenericmessageCommand extends SystemCommand
                 'parse_mode' => 'HTML',
             ]);
         }
-        
+
         if (($data = $this->searchTextOccurrences($teachers, $message)) !== null) {
-            
+
             return Request::sendMessage($data);
         }
-        
+
         $data = [
             'chat_id' => $message->getChat()->getId(),
             'text' => $answer,
             'parse_mode' => 'Markdown',
         ];
-        
+
         return Request::sendMessage($data);
     }
-    
+
     /**
      * @param array   $teachers
      * @param Message $message
@@ -395,20 +404,20 @@ class GenericmessageCommand extends SystemCommand
         }
         if (!empty($patterns)) {
             $keyboard = new Keyboard(...$patterns);
-            
+
             $keyboard->setResizeKeyboard(true)
                 ->setOneTimeKeyboard(true)
                 ->setSelective(false);
-            
+
             $data = [
                 'chat_id' => $message->getChat()->getId(),
                 'text' => 'Виберіть викладача якого ви шукаєте',
                 'reply_markup' => $keyboard,
             ];
-            
+
             return $data;
         }
-        
+
         return null;
     }
 }
