@@ -6,9 +6,10 @@ namespace Longman\TelegramBot\Commands\SystemCommands;
 use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\Message;
+use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Request;
-use Symfony\Component\Cache\Simple\FilesystemCache;
-use WhereIsMyTeacherBot\Model\TeacherParser;
+use Longman\TelegramBot\Telegram;
+use WhereIsMyTeacherBot\Service\TeacherService;
 
 /**
  * Class GenericmessageCommand
@@ -16,6 +17,11 @@ use WhereIsMyTeacherBot\Model\TeacherParser;
  */
 class GenericmessageCommand extends SystemCommand
 {
+    /**
+     * @var TeacherService
+     */
+    protected $teacherService;
+
     /**
      * @var string
      */
@@ -25,6 +31,18 @@ class GenericmessageCommand extends SystemCommand
      * @var string
      */
     protected $version = '0.0.1';
+
+    /**
+     * GenericmessageCommand constructor.
+     *
+     * @param Telegram    $telegram
+     * @param Update|null $update
+     */
+    public function __construct(Telegram $telegram, Update $update = null)
+    {
+        parent::__construct($telegram, $update);
+        $this->teacherService = new TeacherService();
+    }
 
     /**
      * Command execute method
@@ -353,19 +371,8 @@ class GenericmessageCommand extends SystemCommand
             'Прохорчук Н.О.',
         ];
 
-        if (\in_array($message->getText(), $teachers,true)) {
-            $teacherUrl = 'https://rozklad.ztu.edu.ua/schedule/teacher/' . $message->getText();
-
-            $cache = new FilesystemCache();
-            $cacheKey = md5($teacherUrl);
-            if ($cache->has($cacheKey)) {
-                $answer = $cache->get($cacheKey);
-            } else {
-                $answer = TeacherParser::parse($teacherUrl, $message->getText())
-                    . PHP_EOL . "<a href='$teacherUrl'>Повний розклад викладача</a>";
-
-                $cache->set($cacheKey, $answer);
-            }
+        if (\in_array($message->getText(), $teachers, true)) {
+            $answer = $this->teacherService->getSchedule($message->getText());
 
             return Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
