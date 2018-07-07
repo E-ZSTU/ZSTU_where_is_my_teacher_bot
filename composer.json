@@ -10,7 +10,8 @@
   "require": {
     "php": "^7.0",
     "longman/telegram-bot": "^0.44.1",
-    "electrolinux/phpquery": "^0.9.6"
+    "electrolinux/phpquery": "^0.9.6",
+    "symfony/cache": "^4.1"
   },
   "require-dev": {
   }
