@@ -71,7 +71,7 @@ class TeacherParser
                     $text = FreeChoiceSubjectDictionary::getSubjectByFreeChoiceSearchEntity($entity) . PHP_EOL . $text;
                 }
 
-                $text = "\n<b>$time:</b> " . str_replace($this->teacherName, '', $text) . "\n";
+                $text = PHP_EOL . "<b>$time:</b> " . str_replace($this->teacherName, '', $text);
 
                 $lessonsList .= $text;
             }
