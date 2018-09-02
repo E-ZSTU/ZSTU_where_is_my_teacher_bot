@@ -7,10 +7,13 @@ use Carbon\Carbon;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use WhereIsMyTeacherBot\Model\TeacherParser;
 
+/**
+ * Class TeacherService
+ *
+ * @package WhereIsMyTeacherBot\Service
+ */
 class TeacherService
 {
-    const SCHEDULE = 'https://rozklad.ztu.edu.ua/schedule/teacher/';
-
     /**
      * @var FilesystemCache
      */
@@ -21,7 +24,7 @@ class TeacherService
      */
     public function __construct()
     {
-        $this->cache = new FilesystemCache('teacher-schedule',
+        $this->cache = new FilesystemCache('teacher-schedule-unique-1',
             Carbon::SECONDS_PER_MINUTE * Carbon::MINUTES_PER_HOUR * Carbon::HOURS_PER_DAY * Carbon::DAYS_PER_WEEK
         );
     }
@@ -40,10 +43,8 @@ class TeacherService
             return $this->cache->get($cacheKey);
         }
 
-        $teacherUrl = self::SCHEDULE . $teacherName;
-
-        $answer = TeacherParser::parse($teacherUrl, $teacherName)
-            . PHP_EOL . "<a href='$teacherUrl'>Повний розклад викладача</a>";
+        $teacherParser = new TeacherParser($teacherName);
+        $answer = $teacherParser->parse();
 
         $this->cache->set($cacheKey, $answer);
 

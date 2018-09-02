@@ -1,20 +1,52 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace WhereIsMyTeacherBot\Model;
 
-use phpQueryObject;
+use Goutte;
+use Symfony\Component\DomCrawler\Crawler;
+use WhereIsMyTeacherBot\Dictionary\FreeChoiceSubjectDictionary;
+use WhereIsMyTeacherBot\Entity\FreeChoiceSubjectSearch;
 
+/**
+ * Class TeacherParser
+ *
+ * @package WhereIsMyTeacherBot\Model
+ */
 class TeacherParser
 {
-    public static function parse(string $url, string $teacher): string
+    private const SCHEDULE = 'https://rozklad.ztu.edu.ua/schedule/teacher/';
+
+    /**
+     * @var Crawler
+     */
+    private $crawler;
+
+    /**
+     * @var string
+     */
+    private $teacherName;
+
+    /**
+     * TeacherParser constructor.
+     *
+     * @param string $teacherName
+     */
+    public function __construct(string $teacherName)
     {
-        \phpQuery::newDocumentFileHTML($url);
 
-        $currentTable = pq('th.selected')->parents('table');
-        $currentWeek = $currentTable->prev()->text();
+        $gouttleClient = new Goutte\Client();
+        $this->teacherName = $teacherName;
+        $this->crawler = $gouttleClient->request(OAUTH_HTTP_METHOD_GET, self::SCHEDULE . $teacherName);
+    }
 
-        $lessons = pq('th.selected')->parents('table')->find("td:contains(\"$teacher\")");
+    /**
+     * @return string
+     */
+    public function parse(): string
+    {
+        $currentWeek = $this->getCurrentWeek();
+        $lessons = $this->getLessons($this->teacherName);
 
         if (!$lessons) {
             return "$currentWeek для даного викладача - тиждень без пар";
@@ -22,31 +54,75 @@ class TeacherParser
 
         $lessonsList = "<b>Показано $currentWeek</b>\n";
 
-        foreach (self::getGroupedLessons($lessons) as $day => $dayLessons) {
+        foreach ($this->getGroupedLessons($lessons) as $day => $dayLessons) {
             $lessonsList .= "\n<b>$day:</b>\n";
-            /** @var phpQueryObject $pqLesson */
             foreach ($dayLessons as $time => $pqLesson) {
-                $lessonsList .= "\n<b>$time:</b> " . trim(str_replace($teacher, '', $pqLesson->text())) . "\n";
+                $text = trim($pqLesson->textContent);
+
+                if (mb_strpos($text, 'Вибіркова дисципліна')!==false) {
+
+                    $entity = new FreeChoiceSubjectSearch(
+                        $currentWeek,
+                        $this->teacherName,
+                        explode('-',$time)[0],
+                        $day
+                    );
+
+                    $text = FreeChoiceSubjectDictionary::getSubjectByFreeChoiceSearchEntity($entity) . PHP_EOL . $text;
+                }
+
+                $text = "\n<b>$time:</b> " . str_replace($this->teacherName, '', $text) . "\n";
+
+                $lessonsList .= $text;
             }
         }
+
+        $teacherUrl = self::SCHEDULE . $this->teacherName;
+        $lessonsList .= PHP_EOL . "<a href='$teacherUrl'>Повний розклад викладача</a>";
 
         return $lessonsList;
     }
 
     /**
-     * @param \phpQueryObject $lessons
-     *
-     * @return array
+     * @return string
      */
-    protected static function getGroupedLessons(phpQueryObject $lessons): array
+    private function getCurrentWeek(): string
+    {
+        return $this->crawler->filter('th.selected')
+            ->parents()
+            ->filter('table')
+            ->previousAll()
+            ->filter('h2')
+            ->text();
+    }
+
+    /**
+     * @param string $teacher
+     *
+     * @return Crawler
+     */
+    private function getLessons(string $teacher): Crawler
+    {
+        return $this->crawler->filter('th.selected')
+            ->parents()
+            ->filter('table')
+            ->children()
+            ->filter("td:contains(\"$teacher\")");
+    }
+
+    /**
+     * @param Crawler $lessons
+     *
+     * @return \DOMElement[][]
+     */
+    protected function getGroupedLessons(Crawler $lessons): array
     {
         $groupedLessons = [];
 
         foreach ($lessons as $lesson) {
-            $pqLesson = pq($lesson);
-            $hours = $pqLesson->attr('hour');
-            $day = trim($pqLesson->attr('day'), ' 12');
-            $groupedLessons[$day][$hours] = $pqLesson;
+            $hours = $lesson->getAttribute('hour');
+            $day = trim($lesson->getAttribute('day'), ' 12');
+            $groupedLessons[$day][$hours] = $lesson;
         }
 
         return $groupedLessons;
