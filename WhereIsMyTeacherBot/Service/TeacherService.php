@@ -24,7 +24,7 @@ class TeacherService
      */
     public function __construct()
     {
-        $this->cache = new FilesystemCache('teacher-schedule',
+        $this->cache = new FilesystemCache('teacher-schedule-unique-1',
             Carbon::SECONDS_PER_MINUTE * Carbon::MINUTES_PER_HOUR * Carbon::HOURS_PER_DAY * Carbon::DAYS_PER_WEEK
         );
     }
