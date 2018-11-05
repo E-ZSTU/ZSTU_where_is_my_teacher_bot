@@ -9,7 +9,7 @@ use Longman\TelegramBot\Entities\Message;
 use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
-use WhereIsMyTeacherBot\Service\TeacherService;
+use WhereIsMyTeacherBot\TelegramView\TeacherScheduleView;
 use ZSTU\RozkladClient\Client;
 use ZSTU\RozkladClient\V1\Teacher\ResponseData\TeacherCollection;
 
@@ -21,9 +21,9 @@ use ZSTU\RozkladClient\V1\Teacher\ResponseData\TeacherCollection;
 class GenericmessageCommand extends SystemCommand
 {
     /**
-     * @var TeacherService
+     * @var TeacherScheduleView
      */
-    private $teacherService;
+    private $teacherScheduleView;
 
     /**
      * @var Client
@@ -49,7 +49,7 @@ class GenericmessageCommand extends SystemCommand
     public function __construct(Telegram $telegram, Update $update = null)
     {
         parent::__construct($telegram, $update);
-        $this->teacherService = new TeacherService();
+        $this->teacherScheduleView = new TeacherScheduleView();
         $this->rozkladClient = new Client();
     }
 
@@ -64,10 +64,13 @@ class GenericmessageCommand extends SystemCommand
         $message = $this->getMessage();
         $answer = 'Вибачте, я не розумію вас. Команда /help допоможе вам';
 
-        $searchedTeacher = $this->rozkladClient->v1()->teacher()->search($message->getText());
+        $searchedTeacherResult = $this->rozkladClient->v1()->teacher()->search($message->getText());
 
-        if ($searchedTeacher->getSearched()) {
-            $answer = $this->teacherService->getSchedule($message->getText());
+        if ($searchedTeacherResult->getSearched()) {
+
+            $result = $this->rozkladClient->v1()->teacher()->schedule($searchedTeacherResult->getSearched()->getId());
+
+            $answer = $this->teacherScheduleView->toHtml($result);
 
             return Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
@@ -76,8 +79,8 @@ class GenericmessageCommand extends SystemCommand
             ]);
         }
 
-        if ($searchedTeacher->getSuggest()->isNotEmpty()) {
-            $data = $this->searchTextOccurrences($searchedTeacher->getSuggest(), $message);
+        if ($searchedTeacherResult->getSuggest()->isNotEmpty()) {
+            $data = $this->searchTextOccurrences($searchedTeacherResult->getSuggest(), $message);
 
             return Request::sendMessage($data);
         }

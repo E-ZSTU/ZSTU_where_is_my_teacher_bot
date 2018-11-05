@@ -5,6 +5,7 @@ namespace ZSTU\RozkladClient\V1\Teacher;
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\RequestOptions;
+use ZSTU\RozkladClient\V1\Teacher\ResponseData\ScheduleResponseData;
 use ZSTU\RozkladClient\V1\Teacher\ResponseData\SearchResponseData;
 
 /**
@@ -42,5 +43,19 @@ class Client
         $jsonResponse = json_decode($response->getBody()->getContents(), true);
 
         return new SearchResponseData($jsonResponse);
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return ScheduleResponseData
+     */
+    public function schedule(int $id): ScheduleResponseData
+    {
+        $response = $this->httpClient->request('GET', "/teacher-schedule/$id");
+
+        $jsonResponse = json_decode($response->getBody()->getContents(), true);
+
+        return new ScheduleResponseData($jsonResponse);
     }
 }
