@@ -10,7 +10,6 @@
   "type": "project",
   "autoload": {
     "psr-4": {
-      "ZSTU\\RozkladClient\\": "RozkladClient/",
       "WhereIsMyTeacherBot\\": "WhereIsMyTeacherBot/"
     }
   },
@@ -18,8 +17,7 @@
     "php": "^7.0",
     "longman/telegram-bot": "^0.44.1",
     "nesbot/carbon": "^1.32",
-    "guzzlehttp/guzzle": "^6.3",
-    "illuminate/support": "^5.7"
+    "makssiis/zstu-rozklad-php-client": "dev-master"
   },
   "require-dev": {
   }
