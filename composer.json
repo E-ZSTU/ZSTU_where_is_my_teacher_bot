@@ -4,6 +4,7 @@
   "type": "project",
   "autoload": {
     "psr-4": {
+      "ZSTU\\RozkladClient\\" : "RozkladClient/",
       "WhereIsMyTeacherBot\\": "WhereIsMyTeacherBot/"
     }
   },
@@ -12,7 +13,9 @@
     "longman/telegram-bot": "^0.44.1",
     "symfony/cache": "^4.1",
     "nesbot/carbon": "^1.32",
-    "fabpot/goutte": "^3.2"
+    "fabpot/goutte": "^3.2",
+    "guzzlehttp/guzzle": "^6.3",
+    "illuminate/support": "^5.7"
   },
   "require-dev": {
   }
