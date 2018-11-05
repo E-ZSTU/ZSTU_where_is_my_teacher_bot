@@ -9,19 +9,26 @@ use Longman\TelegramBot\Entities\Message;
 use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
-use WhereIsMyTeacherBot\Dictionary\TeacherDictionary;
-use WhereIsMyTeacherBot\Service\TeacherService;
+use WhereIsMyTeacherBot\TelegramView\TeacherScheduleView;
+use ZSTU\RozkladClient\Client;
+use ZSTU\RozkladClient\V1\Teacher\ResponseData\TeacherCollection;
 
 /**
  * Class GenericmessageCommand
+ *
  * @package Longman\TelegramBot\Commands\SystemCommands
  */
 class GenericmessageCommand extends SystemCommand
 {
     /**
-     * @var TeacherService
+     * @var TeacherScheduleView
      */
-    protected $teacherService;
+    private $teacherScheduleView;
+
+    /**
+     * @var Client
+     */
+    private $rozkladClient;
 
     /**
      * @var string
@@ -42,7 +49,8 @@ class GenericmessageCommand extends SystemCommand
     public function __construct(Telegram $telegram, Update $update = null)
     {
         parent::__construct($telegram, $update);
-        $this->teacherService = new TeacherService();
+        $this->teacherScheduleView = new TeacherScheduleView();
+        $this->rozkladClient = new Client();
     }
 
     /**
@@ -56,10 +64,13 @@ class GenericmessageCommand extends SystemCommand
         $message = $this->getMessage();
         $answer = 'Вибачте, я не розумію вас. Команда /help допоможе вам';
 
-        $teachers = TeacherDictionary::getTeachers();
+        $searchedTeacherResult = $this->rozkladClient->v1()->teacher()->search($message->getText());
 
-        if (\in_array($message->getText(), $teachers, true)) {
-            $answer = $this->teacherService->getSchedule($message->getText());
+        if ($searchedTeacherResult->getSearched()) {
+
+            $result = $this->rozkladClient->v1()->teacher()->schedule($searchedTeacherResult->getSearched()->getId());
+
+            $answer = $this->teacherScheduleView->toHtml($result);
 
             return Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
@@ -68,7 +79,8 @@ class GenericmessageCommand extends SystemCommand
             ]);
         }
 
-        if (($data = $this->searchTextOccurrences($teachers, $message)) !== null) {
+        if ($searchedTeacherResult->getSuggest()->isNotEmpty()) {
+            $data = $this->searchTextOccurrences($searchedTeacherResult->getSuggest(), $message);
 
             return Request::sendMessage($data);
         }
@@ -83,18 +95,16 @@ class GenericmessageCommand extends SystemCommand
     }
 
     /**
-     * @param array   $teachers
-     * @param Message $message
+     * @param TeacherCollection $teachers
+     * @param Message           $message
      *
      * @return array|null
      */
-    private function searchTextOccurrences(array $teachers, Message $message): ?array
+    private function searchTextOccurrences(TeacherCollection $teachers, Message $message): ?array
     {
         $patterns = [];
-        foreach ($teachers as $teacher) {
-            if (mb_stripos($teacher, $message->getText()) !== false) {
-                $patterns[] = [$teacher];
-            }
+        foreach ($teachers->all() as $teacher) {
+            $patterns[] = [$teacher->getTeacherName()];
         }
         if (!empty($patterns)) {
             $keyboard = new Keyboard(...$patterns);
