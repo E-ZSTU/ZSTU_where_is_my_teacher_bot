@@ -8,6 +8,7 @@ use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
+use WhereIsMyTeacherBot\TelegramView\RoomScheduleView;
 use ZSTU\RozkladClient\Client;
 
 /**
@@ -21,6 +22,11 @@ class RoomCommand extends UserCommand
      * @var Client
      */
     protected $rozkladClient;
+
+    /**
+     * @var RoomScheduleView
+     */
+    protected $roomScheduleView;
 
     /**
      * @var string
@@ -52,6 +58,7 @@ class RoomCommand extends UserCommand
     {
         parent::__construct($telegram, $update);
         $this->rozkladClient = new Client();
+        $this->roomScheduleView = new RoomScheduleView();
     }
 
     /**
@@ -69,9 +76,12 @@ class RoomCommand extends UserCommand
         $searchResult = $this->rozkladClient->v1()->room()->search($room);
 
         if ($searchResult->getSearched()) {
+
+            $schedule = $this->rozkladClient->v1()->room()->schedule($searchResult->getSearched()->getId());
+
             return Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
-                'text' => 'Незабаром ви зможете віднайти тут розклад',
+                'text' => $this->roomScheduleView->toHtml($schedule),
                 'parse_mode' => 'HTML',
             ]);
         }
