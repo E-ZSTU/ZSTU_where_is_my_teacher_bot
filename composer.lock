@@ -417,12 +417,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/E-ZSTU/rozklad-php-client.git",
-                "reference": "52253dbe932407855e83c7d24f680a032b849bdd"
+                "reference": "4ab0cdc131e89170f0de5064fdd51043d043a94e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/E-ZSTU/rozklad-php-client/zipball/52253dbe932407855e83c7d24f680a032b849bdd",
-                "reference": "52253dbe932407855e83c7d24f680a032b849bdd",
+                "url": "https://api.github.com/repos/E-ZSTU/rozklad-php-client/zipball/4ab0cdc131e89170f0de5064fdd51043d043a94e",
+                "reference": "4ab0cdc131e89170f0de5064fdd51043d043a94e",
                 "shasum": ""
             },
             "require": {
@@ -447,7 +447,7 @@
                     "email": "novik.kor@gmail.com"
                 }
             ],
-            "time": "2018-11-05 23:53:08"
+            "time": "2018-11-06 01:04:45"
         },
         {
             "name": "monolog/monolog",

@@ -11,7 +11,7 @@ use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 use WhereIsMyTeacherBot\TelegramView\TeacherScheduleView;
 use ZSTU\RozkladClient\Client;
-use ZSTU\RozkladClient\V1\Teacher\ResponseData\TeacherCollection;
+use ZSTU\RozkladClient\V1\ResponseData\Teacher\TeacherCollection;
 
 /**
  * Class GenericmessageCommand

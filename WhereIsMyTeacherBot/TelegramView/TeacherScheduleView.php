@@ -3,9 +3,9 @@ declare(strict_types = 1);
 
 namespace WhereIsMyTeacherBot\TelegramView;
 
-use ZSTU\RozkladClient\V1\Teacher\ResponseData\ActivityCollection;
-use ZSTU\RozkladClient\V1\Teacher\ResponseData\ActivityData;
-use ZSTU\RozkladClient\V1\Teacher\ResponseData\ScheduleResponseData;
+use ZSTU\RozkladClient\V1\ResponseData\Activity\ActivityCollection;
+use ZSTU\RozkladClient\V1\ResponseData\Activity\ActivityData;
+use ZSTU\RozkladClient\V1\ResponseData\Teacher\TeacherScheduleResponseData;
 
 /**
  * Class TeacherScheduleView
@@ -15,11 +15,11 @@ use ZSTU\RozkladClient\V1\Teacher\ResponseData\ScheduleResponseData;
 class TeacherScheduleView
 {
     /**
-     * @param ScheduleResponseData $scheduleResponseData
+     * @param TeacherScheduleResponseData $scheduleResponseData
      *
      * @return string
      */
-    public function toHtml(ScheduleResponseData $scheduleResponseData): string
+    public function toHtml(TeacherScheduleResponseData $scheduleResponseData): string
     {
         $activities = $scheduleResponseData->getActivities();
 
